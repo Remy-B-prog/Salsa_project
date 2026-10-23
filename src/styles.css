@@ -1,0 +1,209 @@
+:root {
+  color: #2f2926;
+  background: #fcf7ef;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 12% 0%, #ffe1bf 0, transparent 28rem),
+    linear-gradient(135deg, #fcf7ef 0%, #f5eadc 100%);
+}
+
+button {
+  font: inherit;
+}
+
+.library-shell {
+  width: min(1080px, calc(100% - 3rem));
+  margin: 0 auto;
+  padding: 3rem 0 4.5rem;
+}
+
+.library-header,
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.eyebrow,
+.intro-kicker,
+.section-heading span {
+  margin: 0;
+  color: #9c4a2e;
+  font-family: Arial, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0;
+  font-size: clamp(2rem, 4vw, 3.6rem);
+  font-weight: 400;
+  letter-spacing: -0.045em;
+}
+
+.add-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.85rem 1.2rem;
+  color: #fffaf2;
+  background: #2f2926;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition:
+    transform 160ms ease,
+    background 160ms ease;
+}
+
+.add-button:hover,
+.add-button:focus-visible {
+  background: #9c4a2e;
+  transform: translateY(-2px);
+}
+
+.intro {
+  margin: 4.8rem 0 3.8rem;
+  padding: 2.2rem clamp(1.5rem, 5vw, 4.4rem);
+  border-left: 4px solid #df7d45;
+  background: rgba(255, 250, 242, 0.68);
+}
+
+.intro h2 {
+  max-width: 18ch;
+  margin: 0.65rem 0 1rem;
+  font-size: clamp(1.8rem, 4vw, 3.4rem);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+}
+
+.intro > p:last-child {
+  max-width: 52ch;
+  margin-bottom: 0;
+  color: #665c56;
+  font-family: Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.section-heading {
+  margin-bottom: 1rem;
+}
+
+.section-heading h2 {
+  margin-bottom: 0;
+  font-size: 1.35rem;
+  font-weight: 400;
+}
+
+.level-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid #cbbcb0;
+  border-left: 1px solid #cbbcb0;
+}
+
+.level-card {
+  position: relative;
+  min-height: 190px;
+  padding: 1.6rem;
+  overflow: hidden;
+  border: 0;
+  border-right: 1px solid #cbbcb0;
+  border-bottom: 1px solid #cbbcb0;
+  color: inherit;
+  background: rgba(255, 250, 242, 0.43);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.level-card:hover,
+.level-card:focus-visible {
+  color: #fffaf2;
+  background: #9c4a2e;
+}
+
+.level-number,
+.level-label,
+.level-description {
+  display: block;
+}
+
+.level-number {
+  margin-bottom: 2.6rem;
+  font-family: Arial, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+}
+
+.level-label {
+  font-size: 1.85rem;
+  letter-spacing: -0.04em;
+}
+
+.level-description {
+  max-width: 22ch;
+  margin-top: 0.35rem;
+  font-family: Arial, sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.level-arrow {
+  position: absolute;
+  right: 1.4rem;
+  bottom: 1.2rem;
+  font-family: Arial, sans-serif;
+  font-size: 1.35rem;
+}
+
+@media (max-width: 640px) {
+  .library-shell {
+    width: min(100% - 2rem, 1080px);
+    padding-top: 1.6rem;
+  }
+
+  .library-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .add-button {
+    width: 100%;
+  }
+
+  .intro {
+    margin: 3rem 0;
+    padding: 1.7rem 1.4rem;
+  }
+
+  .level-grid {
+    grid-template-columns: 1fr;
+  }
+}
