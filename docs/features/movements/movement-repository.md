@@ -40,6 +40,8 @@ Une URL externe est ecrite comme texte et aucun fichier n'est cree ni telecharge
 
 `src/features/movements/fileSystemMovementRepository.test.ts` couvre la copie des medias, la persistence des chemins relatifs, la video externe, les recherches et les rejets de validation.
 
+Le formulaire de creation avec schema est documente dans [components/MovementForm.md](components/MovementForm.md).
+
 ```bash
 npm run test
 ```

@@ -259,6 +259,158 @@ h1 {
   padding-top: 7rem;
 }
 
+.form-shell {
+  padding-bottom: 6rem;
+}
+
+.form-introduction {
+  max-width: 52ch;
+  margin: 1rem 0 2.5rem;
+  color: #665c56;
+  font-family: Arial, sans-serif;
+  line-height: 1.65;
+}
+
+.movement-form {
+  display: grid;
+  max-width: 900px;
+  gap: 1.8rem;
+}
+
+.form-field,
+.schema-editor {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.form-field label,
+.schema-editor legend {
+  font-family: Arial, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  border: 1px solid #cbbcb0;
+  border-radius: 0;
+  padding: 0.8rem 0.9rem;
+  color: inherit;
+  background: rgba(255, 250, 242, 0.72);
+  font: inherit;
+}
+
+.form-field textarea {
+  resize: vertical;
+}
+
+.schema-editor {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.schema-editor > p {
+  margin: 0;
+  color: #665c56;
+  font-family: Arial, sans-serif;
+  line-height: 1.5;
+}
+
+.schema-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid #cbbcb0;
+  border-left: 1px solid #cbbcb0;
+}
+
+.schema-slot {
+  display: grid;
+  min-height: 210px;
+  padding: 0.85rem;
+  gap: 0.65rem;
+  border-right: 1px solid #cbbcb0;
+  border-bottom: 1px solid #cbbcb0;
+  background: rgba(255, 250, 242, 0.5);
+}
+
+.schema-slot-number,
+.schema-file-name,
+.schema-slot-empty {
+  font-family: Arial, sans-serif;
+  font-size: 0.75rem;
+}
+
+.schema-slot-number {
+  color: #9c4a2e;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.schema-slot img {
+  width: 100%;
+  min-height: 90px;
+  object-fit: cover;
+}
+
+.schema-slot-empty {
+  display: grid;
+  min-height: 90px;
+  place-items: center;
+  color: #756a63;
+  background: #f5eadc;
+}
+
+.schema-slot input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.schema-slot .secondary-button {
+  justify-self: start;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+.schema-file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.schema-remove {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  color: #7d2e1f;
+  background: transparent;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  font-size: 0.75rem;
+  text-decoration: underline;
+}
+
+.schema-remove:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.field-error {
+  margin: 0;
+  color: #7d2e1f;
+  font-family: Arial, sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
 .intro {
   margin: 4.8rem 0 3.8rem;
   padding: 2.2rem clamp(1.5rem, 5vw, 4.4rem);
@@ -387,5 +539,9 @@ h1 {
 
   .level-grid {
     grid-template-columns: 1fr;
+  }
+
+  .schema-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

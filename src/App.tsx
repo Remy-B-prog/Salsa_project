@@ -9,7 +9,10 @@ import {
 } from './features/library/libraryConnection';
 import { LibraryConnectionScreen } from './features/library/components/LibraryConnectionScreen';
 import { LibraryHome } from './features/library/components/LibraryHome';
+import { FileSystemMovementRepository } from './features/movements/fileSystemMovementRepository';
 import { LevelMovementList } from './features/movements/components/LevelMovementList';
+import { MovementForm } from './features/movements/components/MovementForm';
+import type { Movement } from './features/movements/model';
 
 type AppState =
   | { status: 'loading' }
@@ -71,14 +74,37 @@ function App() {
     );
   }
 
-  return <ConnectedLibrary connection={state.connection} />;
+  return (
+    <ConnectedLibrary
+      connection={state.connection}
+      onMovementCreated={(movement) => {
+        setState((currentState) => {
+          if (currentState.status !== 'connected') {
+            return currentState;
+          }
+
+          return {
+            status: 'connected',
+            connection: {
+              ...currentState.connection,
+              library: {
+                ...currentState.connection.library,
+                movements: [...currentState.connection.library.movements, movement],
+              },
+            },
+          };
+        });
+      }}
+    />
+  );
 }
 
 type ConnectedLibraryProps = {
   connection: LibraryConnection;
+  onMovementCreated: (movement: Movement) => void;
 };
 
-function ConnectedLibrary({ connection }: ConnectedLibraryProps) {
+function ConnectedLibrary({ connection, onMovementCreated }: ConnectedLibraryProps) {
   return (
     <Routes>
       <Route path="/" element={<LibraryHome library={connection.library} />} />
@@ -88,7 +114,12 @@ function ConnectedLibrary({ connection }: ConnectedLibraryProps) {
       />
       <Route
         path="/movements/new"
-        element={<FutureMovementScreen title="Ajouter un mouvement" />}
+        element={
+          <MovementForm
+            onSave={(input) => new FileSystemMovementRepository(connection.directory).create(input)}
+            onCreated={onMovementCreated}
+          />
+        }
       />
       <Route
         path="/movements/:movementId"
