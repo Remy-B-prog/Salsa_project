@@ -50,3 +50,4 @@ npm run format:write
 
 - L'application utilise React, TypeScript, Vite et React Router avec `HashRouter`.
 - Le lien local `obsidian/` est ignore par Git. Il donne seulement acces au vault de specifications depuis WSL.
+- Le stockage local est decrit dans [docs/library-storage.md](docs/library-storage.md).
