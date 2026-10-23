@@ -50,4 +50,8 @@ npm run format:write
 
 - L'application utilise React, TypeScript, Vite et React Router avec `HashRouter`.
 - Le lien local `obsidian/` est ignore par Git. Il donne seulement acces au vault de specifications depuis WSL.
-- Le stockage local est decrit dans [docs/library-storage.md](docs/library-storage.md).
+- Le stockage local est decrit dans [docs/features/library/library-storage.md](docs/features/library/library-storage.md).
+- La connexion au dossier de bibliotheque est decrite dans [docs/features/library/library-connection.md](docs/features/library/library-connection.md).
+- Les composants de bibliotheque sont decrits dans [docs/features/library/components/](docs/features/library/components/).
+- Le modele et le depot de mouvements sont decrits dans [docs/features/movements/movement-repository.md](docs/features/movements/movement-repository.md).
+- Les listes de mouvements par niveau sont decrites dans [docs/features/movements/components/](docs/features/movements/components/).

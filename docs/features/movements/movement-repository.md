@@ -1,0 +1,45 @@
+# Movement repository
+
+`src/features/movements/` contient le modele de mouvement, ses validations et l'adaptateur de persistance dans une bibliotheque locale.
+
+## Modele persiste
+
+Un mouvement enregistre contient son identifiant, son nom, son niveau de 1 a 4, ses notes, la date de creation et ses supports visuels :
+
+- `schemaImagePaths` est vide ou contient huit chemins d'images ordonnees ;
+- `video` est soit une URL externe `http` ou `https`, soit le chemin et le type MIME d'un fichier video local.
+
+Le type `CreateMovementInput` accepte des objets `File` pour les medias a importer. Le type `Movement`, ecrit dans `library.json`, ne contient jamais ces fichiers : seulement leurs chemins relatifs.
+
+## Validations
+
+`validateCreateMovement` refuse :
+
+- un nom ou des notes vides ;
+- un niveau en dehors de 1 a 4 ;
+- un schema qui ne contient pas exactement huit images ;
+- une fiche sans schema ni video ;
+- une URL video qui n'utilise pas `http` ou `https` ;
+- un fichier local dont le type MIME ne commence pas par `video/`.
+
+`parseMovement` applique ces regles aux fiches lues depuis `library.json` avant de les retourner a l'interface.
+
+## Depot local
+
+`FileSystemMovementRepository` implemente :
+
+- `create(input)` : valide, copie les medias et ajoute la fiche a `library.json` ;
+- `getById(id)` : lit une fiche valide par identifiant ;
+- `listByLevel(level)` : lit les fiches d'un niveau.
+
+Les huit images sont copiees vers `images/<movement-id>/1.<extension>` a `8.<extension>`. Une video locale est copiee vers `videos/<movement-id>/video.<extension>`. Les chemins stockes dans `library.json` sont relatifs au dossier de bibliotheque.
+
+Une URL externe est ecrite comme texte et aucun fichier n'est cree ni telecharge pour elle. L'ecriture de la fiche passe par `writeLibrary`, qui maintient `library.backup.json` avant de remplacer le fichier principal.
+
+## Tests
+
+`src/features/movements/fileSystemMovementRepository.test.ts` couvre la copie des medias, la persistence des chemins relatifs, la video externe, les recherches et les rejets de validation.
+
+```bash
+npm run test
+```

@@ -8,69 +8,7 @@ import {
   openLibrary,
   writeLibrary,
 } from './libraryStorage';
-
-type MemoryDirectory = {
-  handle: FileSystemDirectoryHandle;
-  hasDirectory: (name: string) => boolean;
-  readFile: (name: string) => string | undefined;
-  writeFile: (name: string, contents: string) => void;
-};
-
-function createMemoryDirectory(): MemoryDirectory {
-  const files = new Map<string, string>();
-  const directories = new Set<string>();
-
-  const missingFile = (name: string): Error => {
-    const error = new Error(`File not found: ${name}`);
-    error.name = 'NotFoundError';
-    return error;
-  };
-
-  const handle = {
-    kind: 'directory',
-    name: 'library',
-    getDirectoryHandle: async (name: string, options?: { create?: boolean }) => {
-      if (!directories.has(name) && options?.create) {
-        directories.add(name);
-      }
-
-      if (!directories.has(name)) {
-        throw missingFile(name);
-      }
-
-      return { kind: 'directory', name } as FileSystemDirectoryHandle;
-    },
-    getFileHandle: async (name: string, options?: { create?: boolean }) => {
-      if (!files.has(name) && options?.create) {
-        files.set(name, '');
-      }
-
-      if (!files.has(name)) {
-        throw missingFile(name);
-      }
-
-      return {
-        kind: 'file',
-        name,
-        getFile: async () => new File([files.get(name) ?? ''], name),
-        createWritable: async () => ({
-          write: async (contents: string) => {
-            files.set(name, contents);
-          },
-          close: async () => undefined,
-          abort: async () => undefined,
-        }),
-      } as FileSystemFileHandle;
-    },
-  } as unknown as FileSystemDirectoryHandle;
-
-  return {
-    handle,
-    hasDirectory: (name) => directories.has(name),
-    readFile: (name) => files.get(name),
-    writeFile: (name, contents) => files.set(name, contents),
-  };
-}
+import { createMemoryDirectory } from './test/createMemoryDirectory';
 
 describe('library storage', () => {
   it('initializes the expected library structure', async () => {

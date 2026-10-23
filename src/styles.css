@@ -29,6 +29,89 @@ button {
   padding: 3rem 0 4.5rem;
 }
 
+.connection-shell {
+  display: grid;
+  min-height: 100vh;
+  padding: 1.5rem;
+  place-items: center;
+}
+
+.connection-card {
+  width: min(100%, 640px);
+  padding: clamp(2rem, 7vw, 4.5rem);
+  border: 1px solid #cbbcb0;
+  border-top: 5px solid #df7d45;
+  background: rgba(255, 250, 242, 0.78);
+  box-shadow: 12px 12px 0 rgba(156, 74, 46, 0.1);
+}
+
+.connection-card h1 {
+  margin: 0.7rem 0 1.3rem;
+  font-size: clamp(2.4rem, 7vw, 4.8rem);
+  font-weight: 400;
+  line-height: 0.92;
+}
+
+.connection-card > p:not(.eyebrow):not(.connection-error):not(.connection-note) {
+  max-width: 49ch;
+  color: #665c56;
+  font-family: Arial, sans-serif;
+  line-height: 1.65;
+}
+
+.connection-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 2rem;
+}
+
+.secondary-button {
+  border: 1px solid #2f2926;
+  border-radius: 999px;
+  padding: 0.8rem 1.15rem;
+  color: #2f2926;
+  background: transparent;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition:
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.secondary-button:hover,
+.secondary-button:focus-visible {
+  color: #fffaf2;
+  background: #2f2926;
+}
+
+.connection-error {
+  margin: 1.5rem 0 0;
+  padding: 0.85rem 1rem;
+  color: #7d2e1f;
+  background: #ffe1d4;
+  font-family: Arial, sans-serif;
+  line-height: 1.45;
+}
+
+.connection-note,
+.loading-message {
+  color: #756a63;
+  font-family: Arial, sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.connection-note {
+  margin: 2rem 0 0;
+}
+
+.loading-message {
+  margin: 0;
+}
+
 .library-header,
 .section-heading {
   display: flex;
@@ -63,6 +146,7 @@ h1 {
 }
 
 .add-button {
+  display: inline-block;
   border: 0;
   border-radius: 999px;
   padding: 0.85rem 1.2rem;
@@ -72,6 +156,7 @@ h1 {
   font-family: Arial, sans-serif;
   font-size: 0.9rem;
   font-weight: 700;
+  text-decoration: none;
   transition:
     transform 160ms ease,
     background 160ms ease;
@@ -81,6 +166,97 @@ h1 {
 .add-button:focus-visible {
   background: #9c4a2e;
   transform: translateY(-2px);
+}
+
+.add-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+.level-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 4.8rem;
+}
+
+.back-link {
+  color: #665c56;
+  font-family: Arial, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.back-link::before {
+  content: '← ';
+}
+
+.back-link:hover,
+.back-link:focus-visible {
+  color: #9c4a2e;
+}
+
+.empty-level {
+  max-width: 700px;
+  margin-top: 3rem;
+  padding: clamp(2rem, 5vw, 3.5rem);
+  border: 1px solid #cbbcb0;
+  border-top: 4px solid #df7d45;
+  background: rgba(255, 250, 242, 0.72);
+}
+
+.empty-level h2 {
+  margin-bottom: 0.75rem;
+  font-size: clamp(1.5rem, 4vw, 2.4rem);
+  font-weight: 400;
+}
+
+.empty-level p,
+.future-screen > p {
+  max-width: 48ch;
+  margin-bottom: 1.8rem;
+  color: #665c56;
+  font-family: Arial, sans-serif;
+  line-height: 1.65;
+}
+
+.movement-list {
+  max-width: 700px;
+  margin: 3rem 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid #cbbcb0;
+}
+
+.movement-list li {
+  border-bottom: 1px solid #cbbcb0;
+}
+
+.movement-list a {
+  display: block;
+  padding: 1.25rem 0;
+  color: inherit;
+  font-size: clamp(1.35rem, 3vw, 1.9rem);
+  text-decoration: none;
+}
+
+.movement-list a::after {
+  float: right;
+  content: '↗';
+  font-family: Arial, sans-serif;
+  font-size: 1rem;
+}
+
+.movement-list a:hover,
+.movement-list a:focus-visible {
+  color: #9c4a2e;
+}
+
+.future-screen {
+  padding-top: 7rem;
 }
 
 .intro {
@@ -201,6 +377,12 @@ h1 {
   .intro {
     margin: 3rem 0;
     padding: 1.7rem 1.4rem;
+  }
+
+  .level-list-header {
+    align-items: flex-start;
+    flex-direction: column;
+    margin-bottom: 3rem;
   }
 
   .level-grid {

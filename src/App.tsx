@@ -1,50 +1,113 @@
-const levels = [
-  { number: '01', label: 'Niveau 1', description: 'Les bases pour entrer dans la danse.' },
-  { number: '02', label: 'Niveau 2', description: 'Les enchainements qui prennent forme.' },
-  { number: '03', label: 'Niveau 3', description: 'Plus de fluidite et de variations.' },
-  { number: '04', label: 'Niveau 4', description: 'Les mouvements a garder en memoire.' },
-];
+import { useEffect, useState } from 'react';
+import { Link, Navigate, Route, Routes } from 'react-router-dom';
+import {
+  createLibraryFromPicker,
+  LibraryConnectionError,
+  openLibraryFromPicker,
+  restoreSavedLibrary,
+  type LibraryConnection,
+} from './features/library/libraryConnection';
+import { LibraryConnectionScreen } from './features/library/components/LibraryConnectionScreen';
+import { LibraryHome } from './features/library/components/LibraryHome';
+import { LevelMovementList } from './features/movements/components/LevelMovementList';
+
+type AppState =
+  | { status: 'loading' }
+  | { status: 'disconnected'; error?: string }
+  | { status: 'connected'; connection: LibraryConnection };
 
 function App() {
+  const [state, setState] = useState<AppState>({ status: 'loading' });
+
+  useEffect(() => {
+    let isMounted = true;
+
+    void restoreSavedLibrary().then((connection) => {
+      if (!isMounted) {
+        return;
+      }
+
+      setState(connection ? { status: 'connected', connection } : { status: 'disconnected' });
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  async function connect(action: () => Promise<LibraryConnection>): Promise<void> {
+    setState({ status: 'loading' });
+
+    try {
+      setState({ status: 'connected', connection: await action() });
+    } catch (error) {
+      if (error instanceof LibraryConnectionError && error.code === 'cancelled') {
+        setState({ status: 'disconnected' });
+        return;
+      }
+
+      setState({
+        status: 'disconnected',
+        error: error instanceof Error ? error.message : 'Une erreur inconnue est survenue.',
+      });
+    }
+  }
+
+  if (state.status === 'loading') {
+    return (
+      <main className="connection-shell">
+        <p className="loading-message">Chargement de la bibliotheque...</p>
+      </main>
+    );
+  }
+
+  if (state.status === 'disconnected') {
+    return (
+      <LibraryConnectionScreen
+        error={state.error}
+        onCreate={() => void connect(createLibraryFromPicker)}
+        onOpen={() => void connect(openLibraryFromPicker)}
+      />
+    );
+  }
+
+  return <ConnectedLibrary connection={state.connection} />;
+}
+
+type ConnectedLibraryProps = {
+  connection: LibraryConnection;
+};
+
+function ConnectedLibrary({ connection }: ConnectedLibraryProps) {
   return (
-    <main className="library-shell">
-      <header className="library-header">
-        <div>
-          <p className="eyebrow">Salsa library</p>
-          <h1>Bibliotheque de mouvements</h1>
-        </div>
-        <button type="button" className="add-button">
-          Ajouter un mouvement
-        </button>
-      </header>
+    <Routes>
+      <Route path="/" element={<LibraryHome library={connection.library} />} />
+      <Route
+        path="/levels/:level"
+        element={<LevelMovementList directory={connection.directory} />}
+      />
+      <Route
+        path="/movements/new"
+        element={<FutureMovementScreen title="Ajouter un mouvement" />}
+      />
+      <Route
+        path="/movements/:movementId"
+        element={<FutureMovementScreen title="Fiche mouvement" />}
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
 
-      <section className="intro" aria-labelledby="intro-title">
-        <p className="intro-kicker">Ton carnet de pratique</p>
-        <h2 id="intro-title">Retrouve un mouvement, puis danse-le a nouveau.</h2>
-        <p>
-          Les fiches seront organisees par niveau et conserveront les reperes utiles entre deux
-          cours.
-        </p>
-      </section>
-
-      <section aria-labelledby="levels-title">
-        <div className="section-heading">
-          <h2 id="levels-title">Choisir un niveau</h2>
-          <span>0 mouvement</span>
-        </div>
-        <div className="level-grid">
-          {levels.map((level) => (
-            <button type="button" className="level-card" key={level.number}>
-              <span className="level-number">{level.number}</span>
-              <span className="level-label">{level.label}</span>
-              <span className="level-description">{level.description}</span>
-              <span className="level-arrow" aria-hidden="true">
-                ↗
-              </span>
-            </button>
-          ))}
-        </div>
-      </section>
+function FutureMovementScreen({ title }: { title: string }) {
+  return (
+    <main className="library-shell future-screen">
+      <p className="eyebrow">Salsa library</p>
+      <h1>{title}</h1>
+      <p>Cette page sera disponible dans une prochaine etape.</p>
+      <Link to="/" className="secondary-button">
+        Retour a la bibliotheque
+      </Link>
     </main>
   );
 }

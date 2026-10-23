@@ -4,15 +4,17 @@ import { describe, expect, it } from 'vitest';
 import App from './App';
 
 describe('App', () => {
-  it('renders the library and its four levels', () => {
+  it('renders the local library connection screen when no directory is remembered', async () => {
     render(
       <HashRouter>
         <App />
       </HashRouter>,
     );
 
-    expect(screen.getByRole('heading', { name: 'Bibliotheque de mouvements' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Niveau 1/ })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Niveau 4/ })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Connecter votre bibliotheque' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Creer une bibliotheque' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Ouvrir une bibliotheque' })).toBeInTheDocument();
   });
 });

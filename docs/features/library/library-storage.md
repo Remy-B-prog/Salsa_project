@@ -28,7 +28,7 @@ videos/
 }
 ```
 
-Le module valide que le fichier contient la version attendue et un tableau `movements`. La validation detaillee des mouvements sera ajoutee par la tache `004`.
+Le module valide que le fichier contient la version attendue et un tableau `movements`. Le depot de mouvements valide ensuite chaque fiche avant de la lire ou de l'ecrire.
 
 ## API
 
@@ -76,6 +76,4 @@ npm run test
 
 ## Limites actuelles
 
-- Aucun selecteur de dossier ni demande de permission n'est encore implemente.
-- Aucun mouvement ni media n'est encore cree ou lu.
 - La sauvegarde est un fichier unique, sans restauration automatique dans cette version.
