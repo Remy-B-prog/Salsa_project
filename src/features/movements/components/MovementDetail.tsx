@@ -94,6 +94,9 @@ export function MovementDetail({ getMovement, loadMedia, deleteMovement }: Movem
         <Link to={`/levels/${movement.level}`} className="back-link">
           Niveau {movement.level}
         </Link>
+        <Link to={`/movements/${movement.id}/edit`} className="secondary-button">
+          Modifier le mouvement
+        </Link>
       </header>
 
       <p className="eyebrow">Niveau {movement.level}</p>

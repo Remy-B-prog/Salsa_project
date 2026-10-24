@@ -96,6 +96,7 @@ const invalidInputs: { name: string; input: CreateMovementInput; message: string
 function createRepository(directory: FileSystemDirectoryHandle) {
   return new FileSystemMovementRepository(directory, {
     createId: () => 'cross-body-lead',
+    createMediaId: () => 'updated-media',
     now: () => '2026-10-23T12:00:00.000Z',
   });
 }
@@ -264,6 +265,128 @@ describe('file system movement repository', () => {
 
     await expect(repository.delete(movement.id)).resolves.toEqual({ cleanupPending: false });
     await expect(openLibrary(directory.handle)).resolves.toEqual({ version: 1, movements: [] });
+  });
+
+  it('updates a movement while retaining unchanged media and replacing only changed media', async () => {
+    const directory = createMemoryDirectory();
+    await initializeLibrary(directory.handle);
+    const repository = createRepository(directory.handle);
+    const movement = await repository.create({
+      name: 'Cross body lead',
+      level: 2,
+      notes: 'Guide the follower across the line.',
+      schemaImages,
+      video: {
+        kind: 'local-file',
+        file: new File(['old video'], 'demo.webm', { type: 'video/webm' }),
+      },
+    });
+    const replacementImage = new File(['replacement image'], 'replacement.jpg', {
+      type: 'image/jpeg',
+    });
+    const replacementVideo = new File(['replacement video'], 'replacement.mp4', {
+      type: 'video/mp4',
+    });
+
+    const updatedMovement = await repository.update(movement.id, {
+      name: 'Cross body lead with turn',
+      level: 3,
+      notes: 'Guide the follower, then turn.',
+      schemaImages: [
+        ...movement.schemaImagePaths
+          .slice(0, 7)
+          .map((path) => ({ kind: 'existing' as const, path })),
+        { kind: 'new', file: replacementImage },
+      ],
+      video: { kind: 'local-file', file: replacementVideo },
+    });
+
+    expect(updatedMovement).toMatchObject({
+      id: movement.id,
+      name: 'Cross body lead with turn',
+      level: 3,
+      notes: 'Guide the follower, then turn.',
+      schemaImagePaths: [
+        ...movement.schemaImagePaths.slice(0, 7),
+        'images/cross-body-lead/updated-media-8.jpg',
+      ],
+      video: {
+        kind: 'local-file',
+        path: 'videos/cross-body-lead/video-updated-media.mp4',
+        mimeType: 'video/mp4',
+      },
+      createdAt: movement.createdAt,
+    });
+    expect(directory.readFile('images/cross-body-lead/1.png')).toBe('image-1');
+    expect(directory.readFile('images/cross-body-lead/8.png')).toBeUndefined();
+    expect(directory.readFile('images/cross-body-lead/updated-media-8.jpg')).toBe(
+      'replacement image',
+    );
+    expect(directory.readFile('videos/cross-body-lead/video.webm')).toBeUndefined();
+    expect(directory.readFile('videos/cross-body-lead/video-updated-media.mp4')).toBe(
+      'replacement video',
+    );
+    await expect(repository.getById(movement.id)).resolves.toEqual(updatedMovement);
+  });
+
+  it('keeps failed replacement cleanup pending after persisting the update', async () => {
+    const directory = createMemoryDirectory({
+      failRemoving: (path) => path === 'images/cross-body-lead/8.png',
+    });
+    await initializeLibrary(directory.handle);
+    const repository = createRepository(directory.handle);
+    const movement = await repository.create({
+      name: 'Cross body lead',
+      level: 2,
+      notes: 'Guide the follower across the line.',
+      schemaImages,
+    });
+
+    await repository.update(movement.id, {
+      name: movement.name,
+      level: movement.level,
+      notes: movement.notes,
+      schemaImages: [
+        ...movement.schemaImagePaths
+          .slice(0, 7)
+          .map((path) => ({ kind: 'existing' as const, path })),
+        {
+          kind: 'new',
+          file: new File(['replacement image'], 'replacement.jpg', { type: 'image/jpeg' }),
+        },
+      ],
+    });
+
+    expect(directory.readFile('images/cross-body-lead/8.png')).toBe('image-8');
+    await expect(openLibrary(directory.handle)).resolves.toMatchObject({
+      pendingMediaCleanups: [{ paths: ['images/cross-body-lead/8.png'] }],
+    });
+  });
+
+  it('rejects an update that references media from another movement', async () => {
+    const directory = createMemoryDirectory();
+    await initializeLibrary(directory.handle);
+    const repository = createRepository(directory.handle);
+    const movement = await repository.create({
+      name: 'Cross body lead',
+      level: 2,
+      notes: 'Guide the follower across the line.',
+      video: { kind: 'external-url', url: 'https://example.com/video' },
+    });
+
+    await expect(
+      repository.update(movement.id, {
+        name: movement.name,
+        level: movement.level,
+        notes: movement.notes,
+        schemaImages: [],
+        video: {
+          kind: 'local-file',
+          path: 'videos/another-movement/video.mp4',
+          mimeType: 'video/mp4',
+        },
+      }),
+    ).rejects.toThrow('La video locale existante est invalide.');
   });
 
   it.each(invalidInputs)('$name', async ({ input, message }) => {
