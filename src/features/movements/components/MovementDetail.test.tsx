@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { Movement } from '../model';
@@ -79,6 +79,46 @@ describe('MovementDetail', () => {
     ]);
     expect(loadMedia).toHaveBeenNthCalledWith(1, schemaPaths[0]);
     expect(loadMedia).toHaveBeenNthCalledWith(8, schemaPaths[7]);
+  });
+
+  it('opens a schema image in an accessible lightbox and restores focus when it closes', async () => {
+    stubObjectUrlApi();
+    renderDetail(movement);
+
+    const opener = await screen.findByRole('button', { name: 'Agrandir l image du temps 1' });
+    fireEvent.click(opener);
+
+    const dialog = screen.getByRole('dialog', { name: 'Schema - temps 1' });
+    expect(dialog).toHaveAttribute('aria-modal', 'true');
+    expect(within(dialog).getByRole('img', { name: 'Temps 1' })).toHaveAttribute(
+      'src',
+      'blob:images/cross-body-lead/1.png',
+    );
+    expect(screen.getByRole('button', { name: 'Fermer l image' })).toHaveFocus();
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      expect(opener).toHaveFocus();
+    });
+  });
+
+  it('closes the image lightbox with its button or its backdrop', async () => {
+    stubObjectUrlApi();
+    renderDetail(movement);
+
+    const opener = await screen.findByRole('button', { name: 'Agrandir l image du temps 1' });
+    fireEvent.click(opener);
+    fireEvent.click(screen.getByRole('button', { name: 'Fermer l image' }));
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+
+    fireEvent.click(opener);
+    const dialog = screen.getByRole('dialog');
+    fireEvent.mouseDown(dialog.parentElement as HTMLElement);
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
   });
 
   it('uses the native video player for a local video', async () => {

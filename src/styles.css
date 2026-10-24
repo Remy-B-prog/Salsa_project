@@ -314,6 +314,62 @@ h1 {
   object-fit: cover;
 }
 
+.schema-image-button {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+}
+
+.schema-image-button:focus-visible {
+  outline: 3px solid #d87843;
+  outline-offset: 3px;
+}
+
+.image-lightbox-backdrop {
+  position: fixed;
+  z-index: 2;
+  inset: 0;
+  display: grid;
+  padding: clamp(1rem, 4vw, 3rem);
+  place-items: center;
+  background: rgba(47, 41, 38, 0.78);
+}
+
+.image-lightbox-dialog {
+  display: grid;
+  width: min(100%, 1000px);
+  max-height: 100%;
+  gap: 1rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border: 1px solid #cbbcb0;
+  background: #fffaf2;
+  box-shadow: 12px 12px 0 rgba(47, 41, 38, 0.3);
+}
+
+.image-lightbox-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.image-lightbox-header h2 {
+  margin: 0;
+  font-size: clamp(1.1rem, 3vw, 1.6rem);
+  font-weight: 400;
+}
+
+.image-lightbox-dialog img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: min(75vh, 800px);
+  margin: auto;
+  object-fit: contain;
+}
+
 .schema-viewer p {
   margin: 0;
   padding: 0.8rem;
