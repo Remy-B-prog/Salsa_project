@@ -41,6 +41,8 @@ Le handle du dossier est memorise dans IndexedDB, uniquement pour faciliter l'ou
 
 Les props et les tests de ces composants sont documentes dans [components/](components/).
 
+La lecture des images et videos de fiches est documentee dans [library-media-reader.md](library-media-reader.md).
+
 ## Erreurs gerees
 
 | Code                  | Cause                                                                         |

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import {
   createLibraryFromPicker,
   LibraryConnectionError,
@@ -9,7 +9,9 @@ import {
 } from './features/library/libraryConnection';
 import { LibraryConnectionScreen } from './features/library/components/LibraryConnectionScreen';
 import { LibraryHome } from './features/library/components/LibraryHome';
+import { createLibraryMediaUrl } from './features/library/libraryMediaReader';
 import { FileSystemMovementRepository } from './features/movements/fileSystemMovementRepository';
+import { MovementDetail } from './features/movements/components/MovementDetail';
 import { LevelMovementList } from './features/movements/components/LevelMovementList';
 import { MovementForm } from './features/movements/components/MovementForm';
 import type { Movement } from './features/movements/model';
@@ -123,23 +125,15 @@ function ConnectedLibrary({ connection, onMovementCreated }: ConnectedLibraryPro
       />
       <Route
         path="/movements/:movementId"
-        element={<FutureMovementScreen title="Fiche mouvement" />}
+        element={
+          <MovementDetail
+            getMovement={(id) => new FileSystemMovementRepository(connection.directory).getById(id)}
+            loadMedia={(path) => createLibraryMediaUrl(connection.directory, path)}
+          />
+        }
       />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
-  );
-}
-
-function FutureMovementScreen({ title }: { title: string }) {
-  return (
-    <main className="library-shell future-screen">
-      <p className="eyebrow">Salsa library</p>
-      <h1>{title}</h1>
-      <p>Cette page sera disponible dans une prochaine etape.</p>
-      <Link to="/" className="secondary-button">
-        Retour a la bibliotheque
-      </Link>
-    </main>
   );
 }
 
