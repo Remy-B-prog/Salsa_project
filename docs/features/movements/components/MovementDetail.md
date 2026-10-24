@@ -22,5 +22,6 @@ Charge et affiche la fiche associee a la route `#/movements/:movementId`.
 - Delegue le schema a `SchemaViewer` et la video a `MovementVideo`.
 - Distingue une fiche introuvable d'une erreur de lecture, avec un retour vers la bibliotheque.
 - Ne manipule pas directement le systeme de fichiers : les acces sont injectes par la route applicative.
+- Propose un lien vers `#/movements/:movementId/edit` pour modifier la fiche.
 - Propose une modale de confirmation avant une suppression definitive.
 - Revient vers le niveau du mouvement apres suppression et indique lorsqu'un nettoyage de medias reste a reprendre.

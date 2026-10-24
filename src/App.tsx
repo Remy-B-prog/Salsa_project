@@ -12,6 +12,7 @@ import { LibraryHome } from './features/library/components/LibraryHome';
 import { createLibraryMediaUrl } from './features/library/libraryMediaReader';
 import { FileSystemMovementRepository } from './features/movements/fileSystemMovementRepository';
 import { MovementDetail } from './features/movements/components/MovementDetail';
+import { MovementEditForm } from './features/movements/components/MovementEditForm';
 import { LevelMovementList } from './features/movements/components/LevelMovementList';
 import { MovementForm } from './features/movements/components/MovementForm';
 import type { Movement } from './features/movements/model';
@@ -97,6 +98,31 @@ function App() {
           };
         });
       }}
+      onMovementUpdated={(movement) => {
+        setState((currentState) => {
+          if (currentState.status !== 'connected') {
+            return currentState;
+          }
+
+          return {
+            status: 'connected',
+            connection: {
+              ...currentState.connection,
+              library: {
+                ...currentState.connection.library,
+                movements: currentState.connection.library.movements.map((item) =>
+                  typeof item === 'object' &&
+                  item !== null &&
+                  'id' in item &&
+                  item.id === movement.id
+                    ? movement
+                    : item,
+                ),
+              },
+            },
+          };
+        });
+      }}
     />
   );
 }
@@ -104,9 +130,14 @@ function App() {
 type ConnectedLibraryProps = {
   connection: LibraryConnection;
   onMovementCreated: (movement: Movement) => void;
+  onMovementUpdated: (movement: Movement) => void;
 };
 
-function ConnectedLibrary({ connection, onMovementCreated }: ConnectedLibraryProps) {
+function ConnectedLibrary({
+  connection,
+  onMovementCreated,
+  onMovementUpdated,
+}: ConnectedLibraryProps) {
   return (
     <Routes>
       <Route path="/" element={<LibraryHome library={connection.library} />} />
@@ -120,6 +151,18 @@ function ConnectedLibrary({ connection, onMovementCreated }: ConnectedLibraryPro
           <MovementForm
             onSave={(input) => new FileSystemMovementRepository(connection.directory).create(input)}
             onCreated={onMovementCreated}
+          />
+        }
+      />
+      <Route
+        path="/movements/:movementId/edit"
+        element={
+          <MovementEditForm
+            getMovement={(id) => new FileSystemMovementRepository(connection.directory).getById(id)}
+            onSave={(id, input) =>
+              new FileSystemMovementRepository(connection.directory).update(id, input)
+            }
+            onUpdated={onMovementUpdated}
           />
         }
       />

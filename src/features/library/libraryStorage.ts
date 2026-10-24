@@ -87,9 +87,7 @@ export async function resumePendingMediaCleanups(
 
   for (const cleanup of cleanups) {
     try {
-      for (const path of cleanup.paths) {
-        await removeLibraryPath(directory, path);
-      }
+      await removeLibraryMediaPaths(directory, cleanup.paths);
     } catch {
       remainingCleanups.push(cleanup);
     }
@@ -221,6 +219,15 @@ async function writeJsonFile(
   } catch (error) {
     await writable.abort();
     throw error;
+  }
+}
+
+export async function removeLibraryMediaPaths(
+  directory: FileSystemDirectoryHandle,
+  paths: string[],
+): Promise<void> {
+  for (const path of paths) {
+    await removeLibraryPath(directory, path);
   }
 }
 

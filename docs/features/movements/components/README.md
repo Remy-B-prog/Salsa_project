@@ -4,6 +4,7 @@ Chaque composant de la feature `movements` possede sa propre documentation et so
 
 - [LevelMovementList](LevelMovementList.md)
 - [MovementForm](MovementForm.md)
+- [MovementEditForm](MovementEditForm.md)
 - [SchemaEditor](SchemaEditor.md)
 - [VideoSourceEditor](VideoSourceEditor.md)
 - [MovementDetail](MovementDetail.md)
