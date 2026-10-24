@@ -1,13 +1,16 @@
 import {
   IMAGES_DIRECTORY_NAME,
   openLibrary,
+  resumePendingMediaCleanups,
   VIDEOS_DIRECTORY_NAME,
   writeLibrary,
+  type PendingMediaCleanup,
 } from '../library/libraryStorage';
 import type {
   CreateMovementInput,
   Level,
   Movement,
+  MovementDeletionResult,
   MovementRepository,
   VideoSource,
 } from './model';
@@ -65,9 +68,63 @@ export class FileSystemMovementRepository implements MovementRepository {
     return this.parseMovements(library.movements).filter((movement) => movement.level === level);
   }
 
+  async delete(id: string): Promise<MovementDeletionResult> {
+    const library = await openLibrary(this.directory);
+    const movements = this.parseMovements(library.movements);
+    const movement = movements.find((item) => item.id === id);
+
+    if (!movement) {
+      throw new MovementRepositoryError('not-found', 'Le mouvement a supprimer est introuvable.');
+    }
+
+    const cleanup = pendingCleanupFor(movement);
+    const pendingMediaCleanups = cleanup
+      ? [...(library.pendingMediaCleanups ?? []), cleanup]
+      : library.pendingMediaCleanups;
+    await writeLibrary(this.directory, {
+      version: library.version,
+      movements: movements.filter((item) => item.id !== id),
+      ...(pendingMediaCleanups?.length ? { pendingMediaCleanups } : {}),
+    });
+
+    if (!cleanup) {
+      return { cleanupPending: false };
+    }
+
+    try {
+      const updatedLibrary = await resumePendingMediaCleanups(this.directory);
+      const cleanupPending = (updatedLibrary.pendingMediaCleanups ?? []).some((pendingCleanup) =>
+        pendingCleanup.paths.some((path) => cleanup.paths.includes(path)),
+      );
+
+      return { cleanupPending };
+    } catch {
+      return { cleanupPending: true };
+    }
+  }
+
   private parseMovements(movements: unknown[]): Movement[] {
     return movements.map(parseMovement);
   }
+}
+
+export class MovementRepositoryError extends Error {
+  constructor(
+    public readonly code: 'not-found',
+    message: string,
+  ) {
+    super(message);
+    this.name = 'MovementRepositoryError';
+  }
+}
+
+function pendingCleanupFor(movement: Movement): PendingMediaCleanup | undefined {
+  const paths = [
+    ...(movement.schemaImagePaths.length ? [`${IMAGES_DIRECTORY_NAME}/${movement.id}`] : []),
+    ...(movement.video?.kind === 'local-file' ? [`${VIDEOS_DIRECTORY_NAME}/${movement.id}`] : []),
+  ];
+
+  return paths.length ? { paths } : undefined;
 }
 
 async function copySchemaImages(

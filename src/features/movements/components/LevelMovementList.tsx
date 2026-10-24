@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, Navigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
 import { FileSystemMovementRepository } from '../fileSystemMovementRepository';
 import { LEVELS, type Level, type Movement } from '../model';
 
@@ -14,6 +14,7 @@ type LoadState =
 
 export function LevelMovementList({ directory }: LevelMovementListProps) {
   const { level: levelParameter } = useParams();
+  const location = useLocation();
   const level = parseLevel(levelParameter);
   const [state, setState] = useState<LoadState>({ status: 'loading' });
 
@@ -62,6 +63,11 @@ export function LevelMovementList({ directory }: LevelMovementListProps) {
 
       <p className="eyebrow">Niveau {level}</p>
       <h1>Mouvements du niveau {level}</h1>
+      {typeof location.state?.notice === 'string' && (
+        <p className="connection-note" role="status">
+          {location.state.notice}
+        </p>
+      )}
 
       {state.status === 'loading' && (
         <p className="loading-message">Chargement des mouvements...</p>

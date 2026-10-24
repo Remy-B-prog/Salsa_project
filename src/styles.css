@@ -337,6 +337,78 @@ h1 {
   background: #2f2926;
 }
 
+.detail-danger-zone {
+  padding: 1.4rem;
+  border: 1px solid #e5b4a8;
+  background: rgba(255, 225, 212, 0.42);
+}
+
+.detail-danger-zone p {
+  margin: 0 0 1rem;
+  font-family: Arial, sans-serif;
+  line-height: 1.5;
+}
+
+.danger-button {
+  border: 1px solid #7d2e1f;
+  border-radius: 999px;
+  padding: 0.75rem 1rem;
+  color: #fffaf2;
+  background: #7d2e1f;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.danger-button:hover,
+.danger-button:focus-visible {
+  background: #5d1f15;
+}
+
+.danger-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.confirmation-backdrop {
+  position: fixed;
+  z-index: 1;
+  inset: 0;
+  display: grid;
+  padding: 1.5rem;
+  place-items: center;
+  background: rgba(47, 41, 38, 0.45);
+}
+
+.confirmation-dialog {
+  width: min(100%, 520px);
+  padding: clamp(1.5rem, 5vw, 2.5rem);
+  border: 1px solid #cbbcb0;
+  border-top: 5px solid #7d2e1f;
+  background: #fffaf2;
+  box-shadow: 12px 12px 0 rgba(47, 41, 38, 0.2);
+}
+
+.confirmation-dialog h2 {
+  margin-bottom: 1rem;
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  font-weight: 400;
+}
+
+.confirmation-dialog > p {
+  margin-bottom: 1.5rem;
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+}
+
+.confirmation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.8rem;
+}
+
 .form-shell {
   padding-bottom: 6rem;
 }

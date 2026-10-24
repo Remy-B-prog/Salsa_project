@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { Movement } from '../model';
@@ -21,6 +21,7 @@ const movement: Movement = {
 function renderDetail(
   loadedMovement: Movement,
   loadMedia = vi.fn(async (path: string) => `blob:${path}`),
+  deleteMovement = vi.fn().mockResolvedValue({ cleanupPending: false }),
 ) {
   const getMovement = vi.fn().mockResolvedValue(loadedMovement);
 
@@ -29,13 +30,19 @@ function renderDetail(
       <Routes>
         <Route
           path="/movements/:movementId"
-          element={<MovementDetail getMovement={getMovement} loadMedia={loadMedia} />}
+          element={
+            <MovementDetail
+              getMovement={getMovement}
+              loadMedia={loadMedia}
+              deleteMovement={deleteMovement}
+            />
+          }
         />
       </Routes>
     </MemoryRouter>,
   );
 
-  return { getMovement, loadMedia };
+  return { getMovement, loadMedia, deleteMovement };
 }
 
 function stubObjectUrlApi(): void {
@@ -164,5 +171,32 @@ describe('MovementDetail', () => {
     expect(await screen.findByText('Video indisponible.')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Cross body lead' })).toBeInTheDocument();
     expect(screen.getByText('Guide the follower across the line.')).toBeInTheDocument();
+  });
+
+  it('requires confirmation before deleting the movement', async () => {
+    const deleteMovement = vi.fn().mockResolvedValue({ cleanupPending: false });
+    renderDetail({ ...movement, schemaImagePaths: [] }, undefined, deleteMovement);
+
+    const deleteButton = await screen.findByRole('button', { name: 'Supprimer le mouvement' });
+    expect(deleteMovement).not.toHaveBeenCalled();
+
+    fireEvent.click(deleteButton);
+
+    expect(screen.getByRole('dialog')).toHaveTextContent('Supprimer « Cross body lead » ?');
+    expect(deleteMovement).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Supprimer definitivement' }));
+    expect(deleteMovement).toHaveBeenCalledWith('cross-body-lead');
+  });
+
+  it('keeps the detail visible when deletion fails', async () => {
+    const deleteMovement = vi.fn().mockRejectedValue(new Error('Suppression impossible.'));
+    renderDetail({ ...movement, schemaImagePaths: [] }, undefined, deleteMovement);
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Supprimer le mouvement' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Supprimer definitivement' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Suppression impossible.');
+    expect(screen.getByRole('heading', { name: 'Cross body lead' })).toBeInTheDocument();
   });
 });

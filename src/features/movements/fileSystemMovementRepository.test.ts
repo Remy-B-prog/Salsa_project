@@ -207,6 +207,65 @@ describe('file system movement repository', () => {
     await expect(repository.listByLevel(1)).resolves.toEqual([]);
   });
 
+  it('removes a movement and its local media', async () => {
+    const directory = createMemoryDirectory();
+    await initializeLibrary(directory.handle);
+    const repository = createRepository(directory.handle);
+    const movement = await repository.create({
+      name: 'Cross body lead',
+      level: 2,
+      notes: 'Guide the follower across the line.',
+      schemaImages,
+      video: {
+        kind: 'local-file',
+        file: new File(['video'], 'demo.webm', { type: 'video/webm' }),
+      },
+    });
+
+    await expect(repository.delete(movement.id)).resolves.toEqual({ cleanupPending: false });
+    await expect(repository.getById(movement.id)).resolves.toBeUndefined();
+    expect(directory.hasDirectory('images/cross-body-lead')).toBe(false);
+    expect(directory.hasDirectory('videos/cross-body-lead')).toBe(false);
+  });
+
+  it('keeps a failed media cleanup pending while removing the movement', async () => {
+    const directory = createMemoryDirectory({
+      failRemoving: (path) => path === 'videos/cross-body-lead',
+    });
+    await initializeLibrary(directory.handle);
+    const repository = createRepository(directory.handle);
+    const movement = await repository.create({
+      name: 'Cross body lead',
+      level: 2,
+      notes: 'Guide the follower across the line.',
+      video: {
+        kind: 'local-file',
+        file: new File(['video'], 'demo.webm', { type: 'video/webm' }),
+      },
+    });
+
+    await expect(repository.delete(movement.id)).resolves.toEqual({ cleanupPending: true });
+    await expect(repository.getById(movement.id)).resolves.toBeUndefined();
+    await expect(openLibrary(directory.handle)).resolves.toMatchObject({
+      pendingMediaCleanups: [{ paths: ['videos/cross-body-lead'] }],
+    });
+  });
+
+  it('does not schedule local cleanup for an external video', async () => {
+    const directory = createMemoryDirectory();
+    await initializeLibrary(directory.handle);
+    const repository = createRepository(directory.handle);
+    const movement = await repository.create({
+      name: 'Dile que no',
+      level: 3,
+      notes: 'Return to the open position.',
+      video: { kind: 'external-url', url: 'https://example.com/dile-que-no' },
+    });
+
+    await expect(repository.delete(movement.id)).resolves.toEqual({ cleanupPending: false });
+    await expect(openLibrary(directory.handle)).resolves.toEqual({ version: 1, movements: [] });
+  });
+
   it.each(invalidInputs)('$name', async ({ input, message }) => {
     const directory = createMemoryDirectory();
     await initializeLibrary(directory.handle);

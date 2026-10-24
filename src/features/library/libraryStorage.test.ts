@@ -7,6 +7,7 @@ import {
   initializeLibrary,
   openLibrary,
   writeLibrary,
+  resumePendingMediaCleanups,
 } from './libraryStorage';
 import { createMemoryDirectory } from './test/createMemoryDirectory';
 
@@ -64,5 +65,24 @@ describe('library storage', () => {
       version: 1,
       movements: [{ id: 'move-2' }],
     });
+  });
+
+  it('retries pending media cleanups when a library is opened', async () => {
+    const directory = createMemoryDirectory();
+    await initializeLibrary(directory.handle);
+    const imagesDirectory = await directory.handle.getDirectoryHandle(IMAGES_DIRECTORY_NAME);
+    const movementDirectory = await imagesDirectory.getDirectoryHandle('move-1', { create: true });
+    await movementDirectory.getFileHandle('1.png', { create: true });
+    await writeLibrary(directory.handle, {
+      version: 1,
+      movements: [],
+      pendingMediaCleanups: [{ paths: ['images/move-1'] }],
+    });
+
+    await expect(resumePendingMediaCleanups(directory.handle)).resolves.toEqual({
+      version: 1,
+      movements: [],
+    });
+    expect(directory.hasDirectory('images/move-1')).toBe(false);
   });
 });

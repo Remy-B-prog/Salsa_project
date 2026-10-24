@@ -30,6 +30,8 @@ videos/
 
 Le module valide que le fichier contient la version attendue et un tableau `movements`. Le depot de mouvements valide ensuite chaque fiche avant de la lire ou de l'ecrire.
 
+Un fichier peut aussi contenir `pendingMediaCleanups`, une liste interne de chemins locaux a supprimer. Cette liste est absente tant qu'aucun nettoyage n'est en attente.
+
 ## API
 
 ### `initializeLibrary(directory)`
@@ -47,6 +49,10 @@ Elle echoue avec le code `invalid-library` si le fichier est absent, contient du
 ### `writeLibrary(directory, library)`
 
 Valide la bibliotheque a ecrire, sauvegarde la version actuelle dans `library.backup.json`, puis ecrit la nouvelle version dans `library.json`.
+
+### `resumePendingMediaCleanups(directory)`
+
+Reprend les suppressions de medias locaux en attente. Les chemins deja absents sont consideres comme nettoyes. Les echecs restent dans `library.json` et seront reessayes a la prochaine ouverture.
 
 ## Erreurs
 
@@ -67,6 +73,7 @@ Les tests sont dans `src/features/library/libraryStorage.test.ts`. Ils couvrent 
 - la lecture d'une bibliotheque valide ;
 - le rejet d'un fichier invalide ;
 - l'ecriture de la sauvegarde avant le fichier principal.
+- la reprise d'un nettoyage de medias en attente.
 
 Executer les tests avec :
 

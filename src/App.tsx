@@ -129,6 +129,9 @@ function ConnectedLibrary({ connection, onMovementCreated }: ConnectedLibraryPro
           <MovementDetail
             getMovement={(id) => new FileSystemMovementRepository(connection.directory).getById(id)}
             loadMedia={(path) => createLibraryMediaUrl(connection.directory, path)}
+            deleteMovement={(id) =>
+              new FileSystemMovementRepository(connection.directory).delete(id)
+            }
           />
         }
       />

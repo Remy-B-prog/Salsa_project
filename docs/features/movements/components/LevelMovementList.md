@@ -22,3 +22,4 @@ Affiche les mouvements d'un niveau dans la bibliotheque connectee. Le niveau est
 - Chaque nom lie vers `#/movements/:id`, qui sera la fiche de mouvement de la tache 008.
 - Affiche un etat vide et un lien `Ajouter un mouvement` vers `#/movements/new` lorsqu'aucune fiche n'est trouvee.
 - Affiche une erreur de lecture sans masquer la navigation.
+- Affiche le message de retour apres une suppression de fiche.

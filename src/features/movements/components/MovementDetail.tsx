@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import type { Movement } from '../model';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import type { Movement, MovementDeletionResult } from '../model';
 import { MovementVideo } from './MovementVideo';
 import { SchemaViewer } from './SchemaViewer';
 
 type MovementDetailProps = {
   getMovement: (id: string) => Promise<Movement | undefined>;
   loadMedia: (path: string) => Promise<string>;
+  deleteMovement: (id: string) => Promise<MovementDeletionResult>;
 };
 
 type LoadState =
@@ -15,9 +16,13 @@ type LoadState =
   | { status: 'missing' }
   | { status: 'error'; message: string };
 
-export function MovementDetail({ getMovement, loadMedia }: MovementDetailProps) {
+export function MovementDetail({ getMovement, loadMedia, deleteMovement }: MovementDetailProps) {
   const { movementId } = useParams();
+  const navigate = useNavigate();
   const [state, setState] = useState<LoadState>({ status: 'loading' });
+  const [isConfirmingDeletion, setIsConfirmingDeletion] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deletionError, setDeletionError] = useState<string>();
 
   useEffect(() => {
     if (!movementId) {
@@ -61,6 +66,28 @@ export function MovementDetail({ getMovement, loadMedia }: MovementDetailProps) 
 
   const { movement } = state;
 
+  async function deleteCurrentMovement(): Promise<void> {
+    setIsDeleting(true);
+    setDeletionError(undefined);
+
+    try {
+      const result = await deleteMovement(movement.id);
+      navigate(`/levels/${movement.level}`, {
+        replace: true,
+        state: {
+          notice: result.cleanupPending
+            ? 'Fiche supprimee. Le nettoyage des medias locaux sera repris a la prochaine ouverture.'
+            : 'Fiche supprimee.',
+        },
+      });
+    } catch (error) {
+      setDeletionError(
+        error instanceof Error ? error.message : 'Impossible de supprimer ce mouvement.',
+      );
+      setIsDeleting(false);
+    }
+  }
+
   return (
     <main className="library-shell movement-detail">
       <header className="level-list-header">
@@ -79,6 +106,59 @@ export function MovementDetail({ getMovement, loadMedia }: MovementDetailProps) 
 
       <SchemaViewer imagePaths={movement.schemaImagePaths} loadMedia={loadMedia} />
       {movement.video && <MovementVideo source={movement.video} loadMedia={loadMedia} />}
+
+      <section className="detail-section detail-danger-zone" aria-labelledby="deletion-title">
+        <h2 id="deletion-title">Supprimer cette fiche</h2>
+        <p>La fiche et ses medias locaux seront supprimes definitivement.</p>
+        <button
+          type="button"
+          className="danger-button"
+          onClick={() => setIsConfirmingDeletion(true)}
+        >
+          Supprimer le mouvement
+        </button>
+      </section>
+
+      {isConfirmingDeletion && (
+        <div className="confirmation-backdrop">
+          <section
+            className="confirmation-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-dialog-title"
+            aria-describedby="delete-dialog-description"
+          >
+            <h2 id="delete-dialog-title">Supprimer « {movement.name} » ?</h2>
+            <p id="delete-dialog-description">
+              Cette action supprime definitivement la fiche et ses medias locaux. Elle ne peut pas
+              etre annulee.
+            </p>
+            {deletionError && (
+              <p className="connection-error" role="alert">
+                {deletionError}
+              </p>
+            )}
+            <div className="confirmation-actions">
+              <button
+                type="button"
+                className="secondary-button"
+                onClick={() => setIsConfirmingDeletion(false)}
+                disabled={isDeleting}
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                className="danger-button"
+                onClick={() => void deleteCurrentMovement()}
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'Suppression...' : 'Supprimer definitivement'}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </main>
   );
 }

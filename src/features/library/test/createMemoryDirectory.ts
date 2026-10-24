@@ -5,7 +5,9 @@ type MemoryDirectory = {
   writeFile: (path: string, contents: string) => void;
 };
 
-export function createMemoryDirectory(): MemoryDirectory {
+export function createMemoryDirectory(
+  configuration: { failRemoving?: (path: string) => boolean } = {},
+): MemoryDirectory {
   const files = new Map<string, string>();
   const directories = new Set<string>();
 
@@ -58,6 +60,33 @@ export function createMemoryDirectory(): MemoryDirectory {
             abort: async () => undefined,
           }),
         } as FileSystemFileHandle;
+      },
+      removeEntry: async (entryName: string, options?: { recursive?: boolean }) => {
+        const removedPath = entryPath(path, entryName);
+
+        if (options?.recursive && configuration.failRemoving?.(removedPath)) {
+          throw new Error(`Unable to remove: ${removedPath}`);
+        }
+
+        const nestedEntries = [...files.keys(), ...directories.values()].filter(
+          (entry) => entry === removedPath || entry.startsWith(`${removedPath}/`),
+        );
+
+        if (!nestedEntries.length) {
+          throw missingEntry(removedPath);
+        }
+
+        if (
+          !options?.recursive &&
+          nestedEntries.some((entry) => entry.startsWith(`${removedPath}/`))
+        ) {
+          throw new Error(`Directory is not empty: ${removedPath}`);
+        }
+
+        nestedEntries.forEach((entry) => {
+          files.delete(entry);
+          directories.delete(entry);
+        });
       },
     }) as unknown as FileSystemDirectoryHandle;
 

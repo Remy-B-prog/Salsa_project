@@ -31,14 +31,21 @@ Le type `CreateMovementInput` accepte des objets `File` pour les medias a import
 - `create(input)` : valide, copie les medias et ajoute la fiche a `library.json` ;
 - `getById(id)` : lit une fiche valide par identifiant ;
 - `listByLevel(level)` : lit les fiches d'un niveau.
+- `delete(id)` : retire la fiche, puis nettoie ses medias locaux.
 
 Les huit images sont copiees vers `images/<movement-id>/1.<extension>` a `8.<extension>`. Une video locale est copiee vers `videos/<movement-id>/video.<extension>`. Les chemins stockes dans `library.json` sont relatifs au dossier de bibliotheque.
 
 Une URL externe est ecrite comme texte et aucun fichier n'est cree ni telecharge pour elle. L'ecriture de la fiche passe par `writeLibrary`, qui maintient `library.backup.json` avant de remplacer le fichier principal.
 
+## Suppression
+
+La fiche est d'abord retiree de `library.json`. Ses dossiers locaux sont ensuite ajoutes a un nettoyage en attente puis supprimes. Si ce nettoyage echoue, `delete` retourne `cleanupPending: true` : la fiche reste supprimee et le nettoyage est repris a la prochaine connexion de la bibliotheque.
+
+Une fiche avec seulement une URL externe ne declenche aucune suppression de media local.
+
 ## Tests
 
-`src/features/movements/fileSystemMovementRepository.test.ts` couvre la copie des medias, la persistence des chemins relatifs, la video externe, les recherches et les rejets de validation.
+`src/features/movements/fileSystemMovementRepository.test.ts` couvre la copie des medias, la persistence des chemins relatifs, la video externe, les recherches, la suppression, la reprise de nettoyage et les rejets de validation.
 
 Le formulaire de creation avec schema est documente dans [components/MovementForm.md](components/MovementForm.md).
 

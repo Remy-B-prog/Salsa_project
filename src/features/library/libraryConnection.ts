@@ -2,7 +2,7 @@ import { loadLibraryDirectory, saveLibraryDirectory } from './libraryHandleStore
 import {
   initializeLibrary,
   LibraryStorageError,
-  openLibrary,
+  resumePendingMediaCleanups,
   type LibraryDocument,
 } from './libraryStorage';
 
@@ -93,7 +93,7 @@ async function openConnectedLibrary(
       await requestReadWritePermission(directory);
     }
 
-    const library = await openLibrary(directory);
+    const library = await resumePendingMediaCleanups(directory);
     await rememberDirectory(directory);
 
     return { directory, library };

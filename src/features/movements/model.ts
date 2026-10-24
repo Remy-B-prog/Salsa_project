@@ -23,8 +23,13 @@ export type CreateMovementInput = {
   video?: { kind: 'external-url'; url: string } | { kind: 'local-file'; file: File };
 };
 
+export type MovementDeletionResult = {
+  cleanupPending: boolean;
+};
+
 export interface MovementRepository {
   create(input: CreateMovementInput): Promise<Movement>;
   getById(id: string): Promise<Movement | undefined>;
   listByLevel(level: Level): Promise<Movement[]>;
+  delete(id: string): Promise<MovementDeletionResult>;
 }
