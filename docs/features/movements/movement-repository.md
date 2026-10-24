@@ -42,6 +42,8 @@ Une URL externe est ecrite comme texte et aucun fichier n'est cree ni telecharge
 
 Le formulaire de creation avec schema est documente dans [components/MovementForm.md](components/MovementForm.md).
 
+Il peut fournir un schema, une video externe, une video locale ou un schema et une video. La selection de video est documentee dans [components/VideoSourceEditor.md](components/VideoSourceEditor.md).
+
 ```bash
 npm run test
 ```

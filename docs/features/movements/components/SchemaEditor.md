@@ -22,4 +22,4 @@ Edite le schema d'un mouvement sous la forme de huit emplacements, un pour chaqu
 - Une image peut etre remplacee ou retiree avant l'enregistrement.
 - Les URLs d'aperçu creees par le navigateur sont liberees lors du remplacement, de la suppression ou du demontage du composant.
 
-Les objets `File` sont transmis au formulaire, puis au depot de mouvements qui les copie dans le dossier de bibliotheque.
+Les objets `File` sont transmis au formulaire, puis au depot de mouvements qui les copie dans le dossier de bibliotheque. Le schema peut etre vide lorsqu'une source video valide est selectionnee.

@@ -2,8 +2,11 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { LEVELS, type CreateMovementInput, type Level, type Movement } from '../model';
 import { SchemaEditor } from './SchemaEditor';
+import { type DraftVideoSource, VideoSourceEditor } from './VideoSourceEditor';
 
-type FormErrors = Partial<Record<'name' | 'level' | 'notes' | 'schema' | 'form', string>>;
+type FormErrors = Partial<
+  Record<'name' | 'level' | 'notes' | 'schema' | 'video' | 'media' | 'form', string>
+>;
 
 type MovementFormProps = {
   onSave: (input: CreateMovementInput) => Promise<Movement>;
@@ -16,12 +19,13 @@ export function MovementForm({ onSave, onCreated }: MovementFormProps) {
   const [level, setLevel] = useState('');
   const [notes, setNotes] = useState('');
   const [schemaImages, setSchemaImages] = useState<File[]>([]);
+  const [video, setVideo] = useState<DraftVideoSource>();
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSaving, setIsSaving] = useState(false);
 
   async function save(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
-    const nextErrors = validateForm(name, level, notes, schemaImages);
+    const nextErrors = validateForm(name, level, notes, schemaImages, video);
 
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
@@ -32,11 +36,13 @@ export function MovementForm({ onSave, onCreated }: MovementFormProps) {
     setErrors({});
 
     try {
+      const inputVideo = toVideoInput(video);
       const movement = await onSave({
         name,
         level: Number(level) as Level,
         notes,
         schemaImages,
+        ...(inputVideo ? { video: inputVideo } : {}),
       });
       onCreated(movement);
       navigate(`/movements/${movement.id}`);
@@ -60,7 +66,7 @@ export function MovementForm({ onSave, onCreated }: MovementFormProps) {
       <p className="eyebrow">Nouvelle fiche</p>
       <h1>Ajouter un mouvement</h1>
       <p className="form-introduction">
-        Garde les reperes utiles, puis associe une image a chaque temps.
+        Garde les reperes utiles, puis ajoute un schema, une video ou les deux.
       </p>
 
       <form className="movement-form" onSubmit={(event) => void save(event)} noValidate>
@@ -118,6 +124,13 @@ export function MovementForm({ onSave, onCreated }: MovementFormProps) {
         </div>
 
         <SchemaEditor error={errors.schema} onChange={setSchemaImages} />
+        <VideoSourceEditor error={errors.video} value={video} onChange={setVideo} />
+
+        {errors.media && (
+          <p className="field-error" role="alert">
+            {errors.media}
+          </p>
+        )}
 
         {errors.form && (
           <p className="connection-error" role="alert">
@@ -138,6 +151,7 @@ function validateForm(
   level: string,
   notes: string,
   schemaImages: File[],
+  video: DraftVideoSource,
 ): FormErrors {
   const errors: FormErrors = {};
 
@@ -153,11 +167,48 @@ function validateForm(
     errors.notes = 'Les notes du mouvement sont obligatoires.';
   }
 
-  if (schemaImages.length !== 8) {
+  if (schemaImages.length !== 0 && schemaImages.length !== 8) {
     errors.schema = `Le schema doit contenir exactement huit images. ${schemaImages.length}/8 ajoutee${schemaImages.length > 1 ? 's' : ''}.`;
   } else if (schemaImages.some((image) => !image.type.startsWith('image/'))) {
     errors.schema = 'Chaque element du schema doit etre une image.';
   }
 
+  if (video?.kind === 'external-url' && !isHttpUrl(video.url)) {
+    errors.video = 'L URL video doit utiliser http ou https.';
+  }
+
+  if (video?.kind === 'local-file') {
+    if (!video.file) {
+      errors.video = 'Choisis un fichier video.';
+    } else if (!video.file.type.startsWith('video/')) {
+      errors.video = 'Le fichier choisi doit etre une video.';
+    }
+  }
+
+  if (schemaImages.length === 0 && !video) {
+    errors.media = 'Ajoute un schema ou une video.';
+  }
+
   return errors;
+}
+
+function toVideoInput(video: DraftVideoSource): CreateMovementInput['video'] {
+  if (video?.kind === 'external-url') {
+    return video;
+  }
+
+  if (video?.kind === 'local-file' && video.file) {
+    return { kind: 'local-file', file: video.file };
+  }
+
+  return undefined;
+}
+
+function isHttpUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
 }

@@ -6,7 +6,7 @@ Test : `src/features/movements/components/MovementForm.test.tsx`
 
 ## Responsabilite
 
-Affiche le formulaire de creation d'un mouvement avec nom, niveau, notes et schema de huit images. Il est monte par la route `#/movements/new`.
+Affiche le formulaire de creation d'un mouvement avec nom, niveau, notes, schema et source video. Il est monte par la route `#/movements/new`.
 
 ## Props
 
@@ -17,7 +17,8 @@ Affiche le formulaire de creation d'un mouvement avec nom, niveau, notes et sche
 
 ## Comportement
 
-- Valide nom, niveau, notes et les huit images avant d'appeler `onSave`.
+- Valide nom, niveau, notes et au moins un support visuel avant d'appeler `onSave`.
+- Accepte un schema de huit images, une video externe `http` ou `https`, une video locale reconnue, ou un schema et une video.
 - Affiche chaque erreur a cote de son champ, avec un message de schema indiquant le nombre d'images ajoutees.
 - Conserve toutes les saisies si l'ecriture dans le depot echoue et affiche l'erreur de stockage.
 - Apres l'enregistrement, met a jour la bibliotheque en memoire puis redirige vers `#/movements/:id`.

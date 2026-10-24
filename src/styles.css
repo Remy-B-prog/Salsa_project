@@ -283,6 +283,48 @@ h1 {
   gap: 0.65rem;
 }
 
+.video-source {
+  display: grid;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 1.2rem;
+  border: 1px solid #cbbcb0;
+  background: rgba(255, 250, 242, 0.5);
+}
+
+.video-source legend {
+  padding: 0 0.35rem;
+  font-family: Arial, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.video-source > p {
+  margin: 0;
+  color: #665c56;
+  font-family: Arial, sans-serif;
+  font-size: 0.9rem;
+}
+
+.video-source-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem 1.2rem;
+}
+
+.video-source-options label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: Arial, sans-serif;
+  font-size: 0.9rem;
+}
+
+.video-file-name {
+  font-family: Arial, sans-serif;
+  font-size: 0.85rem;
+}
+
 .form-field label,
 .schema-editor legend {
   font-family: Arial, sans-serif;

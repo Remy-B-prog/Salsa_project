@@ -166,6 +166,30 @@ describe('file system movement repository', () => {
     expect(directory.hasDirectory('videos/cross-body-lead')).toBe(false);
   });
 
+  it('creates a movement with a local video and no schema', async () => {
+    const directory = createMemoryDirectory();
+    await initializeLibrary(directory.handle);
+    const repository = createRepository(directory.handle);
+
+    const movement = await repository.create({
+      name: 'Enchufla',
+      level: 2,
+      notes: 'Keep the connection through the turn.',
+      video: {
+        kind: 'local-file',
+        file: new File(['video'], 'enchufla.mp4', { type: 'video/mp4' }),
+      },
+    });
+
+    expect(movement.schemaImagePaths).toEqual([]);
+    expect(movement.video).toEqual({
+      kind: 'local-file',
+      path: 'videos/cross-body-lead/video.mp4',
+      mimeType: 'video/mp4',
+    });
+    expect(directory.readFile('videos/cross-body-lead/video.mp4')).toBe('video');
+  });
+
   it('retrieves a movement by id and lists movements by level', async () => {
     const directory = createMemoryDirectory();
     await initializeLibrary(directory.handle);
