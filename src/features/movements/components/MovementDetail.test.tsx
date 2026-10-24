@@ -79,6 +79,9 @@ describe('MovementDetail', () => {
     ]);
     expect(loadMedia).toHaveBeenNthCalledWith(1, schemaPaths[0]);
     expect(loadMedia).toHaveBeenNthCalledWith(8, schemaPaths[7]);
+    expect(screen.getByRole('button', { name: 'Agrandir l image du temps 1' })).toHaveClass(
+      'schema-image-button',
+    );
   });
 
   it('opens a schema image in an accessible lightbox and restores focus when it closes', async () => {

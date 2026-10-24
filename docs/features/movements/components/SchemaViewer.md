@@ -12,6 +12,8 @@ Chaque image est chargee independamment avec `loadMedia`. Une image indisponible
 
 Les URLs de lecture obtenues sont liberees lors du demontage du composant.
 
+Les vignettes utilisent un ratio portrait `2 / 3`. Elles conservent une taille uniforme dans la grille; `object-fit: cover` recadre seulement leur affichage pour eviter toute deformation. Ce recadrage ne modifie jamais le fichier local ni l'image affichee par la lightbox.
+
 ## Affichage agrandi
 
 Une image chargee est un bouton qui ouvre une lightbox, sans nouvelle lecture ni ecriture du media local. La modale affiche la meme URL, limite l'image a la fenetre et indique le temps selectionne.
