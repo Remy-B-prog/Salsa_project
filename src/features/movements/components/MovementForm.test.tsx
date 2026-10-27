@@ -77,8 +77,23 @@ describe('MovementForm', () => {
     expect(await screen.findByText('Le nom du mouvement est obligatoire.')).toBeInTheDocument();
     expect(screen.getByText('Choisis un niveau entre 1 et 4.')).toBeInTheDocument();
     expect(screen.getByText('Les notes du mouvement sont obligatoires.')).toBeInTheDocument();
-    expect(screen.getByText('Ajoute un schema ou une video.')).toBeInTheDocument();
     expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it('saves a movement without visual media', async () => {
+    const { onSave } = renderForm();
+    fillMovementDetails();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer le mouvement' }));
+
+    await waitFor(() => {
+      expect(onSave).toHaveBeenCalledWith({
+        name: 'Cross body lead',
+        level: 2,
+        notes: 'Guide the follower across the line.',
+        schemaImages: [],
+      });
+    });
   });
 
   it('saves a movement with eight images and navigates to its future detail route', async () => {

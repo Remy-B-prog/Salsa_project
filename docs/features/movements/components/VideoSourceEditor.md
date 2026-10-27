@@ -21,4 +21,4 @@ Permet de choisir la source video unique d'un mouvement : aucune, lien externe o
 - Les boutons radio ne permettent de choisir qu'une seule source video.
 - Une URL externe est saisie comme texte et n'est jamais telechargee.
 - Un fichier local est filtre par `accept="video/*"`; son type MIME est valide par le formulaire puis par le depot.
-- La video peut etre absente uniquement si le schema contient les huit images requises.
+- La video est facultative, quel que soit le contenu du schema.

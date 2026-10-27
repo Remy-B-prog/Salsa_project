@@ -10,6 +10,7 @@ import {
 import { LibraryConnectionScreen } from './features/library/components/LibraryConnectionScreen';
 import { LibraryHome } from './features/library/components/LibraryHome';
 import { createLibraryMediaUrl } from './features/library/libraryMediaReader';
+import { openLibrary } from './features/library/libraryStorage';
 import { FileSystemMovementRepository } from './features/movements/fileSystemMovementRepository';
 import { MovementDetail } from './features/movements/components/MovementDetail';
 import { MovementEditForm } from './features/movements/components/MovementEditForm';
@@ -140,7 +141,15 @@ function ConnectedLibrary({
 }: ConnectedLibraryProps) {
   return (
     <Routes>
-      <Route path="/" element={<LibraryHome library={connection.library} />} />
+      <Route
+        path="/"
+        element={
+          <LibraryHome
+            library={connection.library}
+            loadLibrary={() => openLibrary(connection.directory)}
+          />
+        }
+      />
       <Route
         path="/levels/:level"
         element={<LevelMovementList directory={connection.directory} />}

@@ -14,9 +14,7 @@ type EditVideoDraft =
   | { kind: 'new-local'; file?: File }
   | undefined;
 
-type FormErrors = Partial<
-  Record<'name' | 'level' | 'notes' | 'schema' | 'video' | 'media' | 'form', string>
->;
+type FormErrors = Partial<Record<'name' | 'level' | 'notes' | 'schema' | 'video' | 'form', string>>;
 
 type MovementEditFormProps = {
   getMovement: (id: string) => Promise<Movement | undefined>;
@@ -170,7 +168,6 @@ export function MovementEditForm({ getMovement, onSave, onUpdated }: MovementEdi
         <EditSchemaEditor slots={schemaSlots} onChange={setSchemaSlots} error={errors.schema} />
         <EditVideoSource value={video} onChange={setVideo} error={errors.video} />
 
-        {errors.media && <p className="field-error">{errors.media}</p>}
         {errors.form && (
           <p className="connection-error" role="alert">
             {errors.form}
@@ -378,10 +375,6 @@ function validateForm(
       errors.video = 'Le fichier choisi doit etre une video.';
     }
   }
-  if (!schemaSlots.length && !video) {
-    errors.media = 'Ajoute un schema ou une video.';
-  }
-
   return errors;
 }
 

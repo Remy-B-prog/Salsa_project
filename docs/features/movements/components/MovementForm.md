@@ -17,8 +17,8 @@ Affiche le formulaire de creation d'un mouvement avec nom, niveau, notes, schema
 
 ## Comportement
 
-- Valide nom, niveau, notes et au moins un support visuel avant d'appeler `onSave`.
-- Accepte un schema de huit images, une video externe `http` ou `https`, une video locale reconnue, ou un schema et une video.
+- Valide nom, niveau et notes avant d'appeler `onSave`.
+- Accepte une fiche sans media, un schema de huit images, une video externe `http` ou `https`, une video locale reconnue, ou un schema et une video.
 - Affiche chaque erreur a cote de son champ, avec un message de schema indiquant le nombre d'images ajoutees.
 - Conserve toutes les saisies si l'ecriture dans le depot echoue et affiche l'erreur de stockage.
 - Apres l'enregistrement, met a jour la bibliotheque en memoire puis redirige vers `#/movements/:id`.

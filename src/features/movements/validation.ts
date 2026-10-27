@@ -36,10 +36,6 @@ export function validateCreateMovement(input: CreateMovementInput): void {
     throw new MovementValidationError('Chaque element du schema doit etre une image.');
   }
 
-  if (!schemaImages.length && !input.video) {
-    throw new MovementValidationError('Un schema ou une video est obligatoire.');
-  }
-
   if (!input.video) {
     return;
   }
@@ -71,8 +67,7 @@ export function parseMovement(value: unknown): Movement {
     !notes.trim() ||
     typeof createdAt !== 'string' ||
     !createdAt ||
-    !isSchemaPaths(schemaImagePaths) ||
-    (schemaImagePaths.length === 0 && !video)
+    !isSchemaPaths(schemaImagePaths)
   ) {
     throw new MovementValidationError('Un mouvement enregistre est invalide.');
   }

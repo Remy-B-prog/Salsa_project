@@ -118,6 +118,24 @@ describe('MovementEditForm', () => {
     expect(onSave).not.toHaveBeenCalled();
   });
 
+  it('saves after removing the last visual medium', async () => {
+    const mediaOnlyMovement: Movement = { ...movement, schemaImagePaths: [] };
+    const { onSave } = renderForm(mediaOnlyMovement);
+
+    expect(await screen.findByLabelText('Lien externe')).toBeChecked();
+    fireEvent.click(screen.getByLabelText('Aucune video'));
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer les modifications' }));
+
+    await waitFor(() => {
+      expect(onSave).toHaveBeenCalledWith(mediaOnlyMovement.id, {
+        name: mediaOnlyMovement.name,
+        level: mediaOnlyMovement.level,
+        notes: mediaOnlyMovement.notes,
+        schemaImages: [],
+      });
+    });
+  });
+
   it('keeps entered values when saving fails', async () => {
     const onSave = vi.fn().mockRejectedValue(new Error('Ecriture impossible.'));
 

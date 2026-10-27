@@ -1,4 +1,5 @@
 import type { LibraryDocument } from '../libraryStorage';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const levels = [
@@ -20,10 +21,34 @@ const levels = [
 
 type LibraryHomeProps = {
   library: LibraryDocument;
+  loadLibrary?: () => Promise<LibraryDocument>;
 };
 
-export function LibraryHome({ library }: LibraryHomeProps) {
-  const movementCount = library.movements.length;
+export function LibraryHome({ library, loadLibrary }: LibraryHomeProps) {
+  const [loadedLibrary, setLoadedLibrary] = useState<LibraryDocument>();
+
+  useEffect(() => {
+    if (!loadLibrary) {
+      return;
+    }
+
+    let isCurrent = true;
+
+    void loadLibrary().then(
+      (loadedLibrary) => {
+        if (isCurrent) {
+          setLoadedLibrary(loadedLibrary);
+        }
+      },
+      () => undefined,
+    );
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [library, loadLibrary]);
+
+  const movementCount = (loadedLibrary ?? library).movements.length;
 
   return (
     <main className="library-shell">

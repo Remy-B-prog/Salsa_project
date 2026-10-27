@@ -19,4 +19,20 @@ describe('LibraryHome', () => {
       '/movements/new',
     );
   });
+
+  it('refreshes the count from the connected library', async () => {
+    render(
+      <MemoryRouter>
+        <LibraryHome
+          library={{ version: 1, movements: [{ id: 'stale-movement' }] }}
+          loadLibrary={async () => ({
+            version: 1,
+            movements: [{ id: 'move-1' }, { id: 'move-2' }, { id: 'move-3' }],
+          })}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findByText('3 mouvements')).toBeInTheDocument();
+  });
 });

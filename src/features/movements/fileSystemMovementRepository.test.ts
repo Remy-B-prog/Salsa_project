@@ -41,11 +41,6 @@ const invalidInputs: { name: string; input: CreateMovementInput; message: string
     message: 'Les notes du mouvement sont obligatoires.',
   },
   {
-    name: 'does not accept a movement without visual media',
-    input: { name: 'Basic step', level: 1, notes: 'Keep the timing.' },
-    message: 'Un schema ou une video est obligatoire.',
-  },
-  {
     name: 'does not accept an incomplete schema',
     input: {
       name: 'Basic step',
@@ -189,6 +184,30 @@ describe('file system movement repository', () => {
       mimeType: 'video/mp4',
     });
     expect(directory.readFile('videos/cross-body-lead/video.mp4')).toBe('video');
+  });
+
+  it('creates a movement without visual media', async () => {
+    const directory = createMemoryDirectory();
+    await initializeLibrary(directory.handle);
+    const repository = createRepository(directory.handle);
+
+    const movement = await repository.create({
+      name: 'Body movement',
+      level: 1,
+      notes: 'Practice the weight transfer.',
+    });
+
+    expect(movement).toEqual({
+      id: 'cross-body-lead',
+      name: 'Body movement',
+      level: 1,
+      notes: 'Practice the weight transfer.',
+      schemaImagePaths: [],
+      createdAt: '2026-10-23T12:00:00.000Z',
+    });
+    expect(directory.hasDirectory('images/cross-body-lead')).toBe(false);
+    expect(directory.hasDirectory('videos/cross-body-lead')).toBe(false);
+    await expect(repository.getById(movement.id)).resolves.toEqual(movement);
   });
 
   it('retrieves a movement by id and lists movements by level', async () => {
@@ -361,6 +380,34 @@ describe('file system movement repository', () => {
     await expect(openLibrary(directory.handle)).resolves.toMatchObject({
       pendingMediaCleanups: [{ paths: ['images/cross-body-lead/8.png'] }],
     });
+  });
+
+  it('removes all visual media when a movement is updated without them', async () => {
+    const directory = createMemoryDirectory();
+    await initializeLibrary(directory.handle);
+    const repository = createRepository(directory.handle);
+    const movement = await repository.create({
+      name: 'Cross body lead',
+      level: 2,
+      notes: 'Guide the follower across the line.',
+      schemaImages,
+      video: {
+        kind: 'local-file',
+        file: new File(['video'], 'demo.webm', { type: 'video/webm' }),
+      },
+    });
+
+    const updatedMovement = await repository.update(movement.id, {
+      name: movement.name,
+      level: movement.level,
+      notes: movement.notes,
+    });
+
+    expect(updatedMovement.schemaImagePaths).toEqual([]);
+    expect(updatedMovement.video).toBeUndefined();
+    expect(directory.readFile('images/cross-body-lead/1.png')).toBeUndefined();
+    expect(directory.readFile('videos/cross-body-lead/video.webm')).toBeUndefined();
+    await expect(repository.getById(movement.id)).resolves.toEqual(updatedMovement);
   });
 
   it('rejects an update that references media from another movement', async () => {

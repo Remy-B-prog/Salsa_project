@@ -18,9 +18,10 @@ Le type `CreateMovementInput` accepte des objets `File` pour les medias a import
 - un nom ou des notes vides ;
 - un niveau en dehors de 1 a 4 ;
 - un schema qui ne contient pas exactement huit images ;
-- une fiche sans schema ni video ;
 - une URL video qui n'utilise pas `http` ou `https` ;
 - un fichier local dont le type MIME ne commence pas par `video/`.
+
+Le schema et la video sont facultatifs. Une fiche peut etre enregistree sans media local ni URL externe.
 
 `parseMovement` applique ces regles aux fiches lues depuis `library.json` avant de les retourner a l'interface.
 
@@ -60,7 +61,7 @@ Le formulaire de creation avec schema est documente dans [components/MovementFor
 
 Le formulaire de modification est documente dans [components/MovementEditForm.md](components/MovementEditForm.md).
 
-Il peut fournir un schema, une video externe, une video locale ou un schema et une video. La selection de video est documentee dans [components/VideoSourceEditor.md](components/VideoSourceEditor.md).
+Il peut ne fournir aucun media, ou fournir un schema, une video externe, une video locale ou un schema et une video. La selection de video est documentee dans [components/VideoSourceEditor.md](components/VideoSourceEditor.md).
 
 ```bash
 npm run test

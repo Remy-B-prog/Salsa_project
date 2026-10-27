@@ -11,7 +11,7 @@ export function VideoSourceEditor({ error, onChange, value }: VideoSourceEditorP
   return (
     <fieldset className="video-source" aria-describedby={error ? 'video-error' : undefined}>
       <legend>Video</legend>
-      <p>Optionnelle si le schema contient huit images.</p>
+      <p>Optionnelle.</p>
 
       <div className="video-source-options">
         <label>

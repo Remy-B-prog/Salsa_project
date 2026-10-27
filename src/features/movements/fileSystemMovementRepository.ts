@@ -230,10 +230,6 @@ function validateUpdateMovement(input: UpdateMovementInput): void {
     throw new MovementValidationError('Chaque element du schema doit etre une image.');
   }
 
-  if (!schemaImages.length && !input.video) {
-    throw new MovementValidationError('Un schema ou une video est obligatoire.');
-  }
-
   if (input.video?.kind === 'external-url') {
     validateExternalUrl(input.video.url);
   }

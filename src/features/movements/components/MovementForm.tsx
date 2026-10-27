@@ -4,9 +4,7 @@ import { LEVELS, type CreateMovementInput, type Level, type Movement } from '../
 import { SchemaEditor } from './SchemaEditor';
 import { type DraftVideoSource, VideoSourceEditor } from './VideoSourceEditor';
 
-type FormErrors = Partial<
-  Record<'name' | 'level' | 'notes' | 'schema' | 'video' | 'media' | 'form', string>
->;
+type FormErrors = Partial<Record<'name' | 'level' | 'notes' | 'schema' | 'video' | 'form', string>>;
 
 type MovementFormProps = {
   onSave: (input: CreateMovementInput) => Promise<Movement>;
@@ -66,7 +64,7 @@ export function MovementForm({ onSave, onCreated }: MovementFormProps) {
       <p className="eyebrow">Nouvelle fiche</p>
       <h1>Ajouter un mouvement</h1>
       <p className="form-introduction">
-        Garde les reperes utiles, puis ajoute un schema, une video ou les deux.
+        Garde les reperes utiles, puis ajoute si besoin un schema, une video ou les deux.
       </p>
 
       <form className="movement-form" onSubmit={(event) => void save(event)} noValidate>
@@ -126,12 +124,6 @@ export function MovementForm({ onSave, onCreated }: MovementFormProps) {
         <SchemaEditor error={errors.schema} onChange={setSchemaImages} />
         <VideoSourceEditor error={errors.video} value={video} onChange={setVideo} />
 
-        {errors.media && (
-          <p className="field-error" role="alert">
-            {errors.media}
-          </p>
-        )}
-
         {errors.form && (
           <p className="connection-error" role="alert">
             {errors.form}
@@ -183,10 +175,6 @@ function validateForm(
     } else if (!video.file.type.startsWith('video/')) {
       errors.video = 'Le fichier choisi doit etre une video.';
     }
-  }
-
-  if (schemaImages.length === 0 && !video) {
-    errors.media = 'Ajoute un schema ou une video.';
   }
 
   return errors;

@@ -13,6 +13,7 @@ Charge le mouvement de la route `#/movements/:movementId/edit`, pre-remplit son 
 - Conserve les chemins des images et de la video locale non modifies sous forme de sources `existing`.
 - Permet de remplacer chaque image, de retirer ou de recreer un schema de huit images.
 - Permet de retirer la video, de passer entre URL externe et fichier local, ou de remplacer une video locale.
+- Permet de retirer tous les medias : nom, niveau et notes restent les seuls champs obligatoires.
 - Valide les champs avant l'ecriture et conserve les donnees saisies si celle-ci echoue.
 - Met a jour l'etat applicatif, puis revient vers la fiche apres une sauvegarde reussie.
 
