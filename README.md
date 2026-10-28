@@ -46,6 +46,10 @@ Pour appliquer le formatage automatiquement :
 npm run format:write
 ```
 
+## Integration continue
+
+GitHub Actions execute `npm ci`, le controle de format, lint, les tests et le build pour chaque push et pull request vers `main`.
+
 ## Notes
 
 - L'application utilise React, TypeScript, Vite et React Router avec `HashRouter`.
