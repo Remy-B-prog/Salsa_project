@@ -50,6 +50,10 @@ npm run format:write
 
 GitHub Actions execute `npm ci`, le controle de format, lint, les tests et le build pour chaque push et pull request vers `main`.
 
+## Deploiement
+
+Le workflow GitHub Pages publie l'application apres chaque push vers `main`. Dans GitHub, activer **Settings > Pages > Build and deployment > Source > GitHub Actions** une seule fois. Une fois le premier deploiement reussi, le site est disponible sur `https://remy-b-prog.github.io/Salsa_project/`.
+
 ## Notes
 
 - L'application utilise React, TypeScript, Vite et React Router avec `HashRouter`.

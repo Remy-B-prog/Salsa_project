@@ -1,6 +1,6 @@
 # LibraryConnectionScreen
 
-Implementation  : `src/features/library/components/LibraryConnectionScreen.tsx`
+Implementation : `src/features/library/components/LibraryConnectionScreen.tsx`
 
 Test : `src/features/library/components/LibraryConnectionScreen.test.tsx`
 
