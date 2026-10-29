@@ -1,6 +1,7 @@
 import type { LibraryDocument } from '../libraryStorage';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { appVersion } from '../../../appVersion';
 
 const levels = [
   {
@@ -91,6 +92,8 @@ export function LibraryHome({ library, loadLibrary }: LibraryHomeProps) {
           ))}
         </div>
       </section>
+
+      <footer className="app-version">Version {appVersion}</footer>
     </main>
   );
 }

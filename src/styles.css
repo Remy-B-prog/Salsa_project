@@ -29,6 +29,16 @@ button {
   padding: 3rem 0 4.5rem;
 }
 
+.app-version {
+  margin: 4rem 0 0;
+  color: #756a63;
+  font-family: Arial, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-align: right;
+  text-transform: uppercase;
+}
+
 .connection-shell {
   display: grid;
   min-height: 100vh;

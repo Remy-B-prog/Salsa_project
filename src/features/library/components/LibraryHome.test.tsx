@@ -18,6 +18,7 @@ describe('LibraryHome', () => {
       'href',
       '/movements/new',
     );
+    expect(screen.getByText('Version 1.0.0')).toBeInTheDocument();
   });
 
   it('refreshes the count from the connected library', async () => {
